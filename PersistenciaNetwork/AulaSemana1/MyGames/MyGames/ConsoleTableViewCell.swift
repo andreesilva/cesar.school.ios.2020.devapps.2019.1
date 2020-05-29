@@ -1,19 +1,17 @@
 //
-//  GameTableViewCell.swift
+//  ConsoleTableViewCell.swift
 //  MyGames
 //
-//  Created by Douglas Frari on 16/05/20.
+//  Created by aluno on 17/05/20.
 //  Copyright © 2020 Douglas Frari. All rights reserved.
 //
 
 import UIKit
 
-class GameTableViewCell: UITableViewCell {
+class ConsoleTableViewCell: UITableViewCell {
 
-    
     @IBOutlet weak var ivCover: UIImageView!
     @IBOutlet weak var lbTitle: UILabel!
-    @IBOutlet weak var lbConsole: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -26,18 +24,14 @@ class GameTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func prepare(with game: Game) {
+    func prepare(with console: Console) {
         
-        lbTitle.text = game.title ?? ""
-        lbConsole.text = game.console?.name ?? ""
-        if let image = game.cover as? UIImage {
+        lbTitle.text = console.name ?? ""
+        if let image = console.cover as? UIImage {
             ivCover.image = image
         } else {
             ivCover.image = UIImage(named: "noCover")
         }
     }
-    
-    
-    
 
 }
