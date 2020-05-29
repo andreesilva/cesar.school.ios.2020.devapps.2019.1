@@ -15,7 +15,7 @@ class GameViewController: UIViewController {
     @IBOutlet weak var lbConsole: UILabel!
     @IBOutlet weak var lbReleaseDate: UILabel!
     @IBOutlet weak var ivCover: UIImageView!
-    
+    @IBOutlet weak var ivCoverConsole: UIImageView!
     
     var game: Game?
     
@@ -44,6 +44,12 @@ class GameViewController: UIViewController {
         } else {
             ivCover.image = UIImage(named: "noCoverFull")
         }
+        
+        if let imageConsole = game?.console?.cover as? UIImage {
+            ivCoverConsole.image = imageConsole
+        } else {
+            ivCoverConsole.image = UIImage(named: "noCoverFull")
+        }
     }
 
     
@@ -54,7 +60,7 @@ class GameViewController: UIViewController {
         // Get the new view controller using segue.destination.
         // Pass the selected object to the new view controller.
         
-        let vc = segue.destination as! AddEditViewController
+        let vc = segue.destination as! GameAddEditViewController
         vc.game = game
     }
     

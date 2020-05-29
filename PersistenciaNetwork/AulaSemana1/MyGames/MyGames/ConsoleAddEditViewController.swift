@@ -1,113 +1,56 @@
 //
-//  AddEditViewController.swift
+//  ConsoleAddEditViewController.swift
 //  MyGames
 //
-//  Created by Douglas Frari on 16/05/20.
+//  Created by aluno on 17/05/20.
 //  Copyright © 2020 Douglas Frari. All rights reserved.
 //
 
 import UIKit
 import Photos
 
-class AddEditViewController: UIViewController {
-    
-    
-    @IBOutlet weak var tfTitle: UITextField!
+class ConsoleAddEditViewController: UIViewController {
+
     @IBOutlet weak var tfConsole: UITextField!
-    @IBOutlet weak var dpReleaseDate: UIDatePicker!
     @IBOutlet weak var btAddEdit: UIButton!
     @IBOutlet weak var btCover: UIButton!
     @IBOutlet weak var ivCover: UIImageView!
     
-    
-    var game: Game?
-    
-    
-    // tip. Lazy somente constroi a classe quando for usar
-    lazy var pickerView: UIPickerView = {
-        let pickerView = UIPickerView()
-        pickerView.delegate = self
-        pickerView.dataSource = self
-        pickerView.backgroundColor = .white
-        return pickerView
-    }()
-    
+    var console: Console?
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // puxar dos dados do banco e atualizar memoria: "consoles"
-        ConsolesManager.shared.loadConsoles(with: context)
+
+        // Do any additional setup after loading the view.
     }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+       
         prepareDataLayout()
     }
     
-    func prepareDataLayout() {
-        if game != nil {
-            title = "Editar jogo"
-            btAddEdit.setTitle("ALTERAR", for: .normal)
-            tfTitle.text = game?.title
+    func prepareDataLayout(){
+        if console != nil {
+            title = "Editar Console"
+            tfConsole.text = console?.name
             
-            // tip. alem do console pegamos o indice atual para setar o picker view
-            if let console = game?.console, let index = ConsolesManager.shared.consoles.firstIndex(of: console) {
-                tfConsole.text = console.name
-                pickerView.selectRow(index, inComponent: 0, animated: false)
-            }
-            ivCover.image = game?.cover as? UIImage
-            if let releaseDate = game?.releaseDate {
-                dpReleaseDate.date = releaseDate
-            }
-            if game?.cover != nil {
-                btCover.setTitle(nil, for: .normal)
+            if let image = console?.cover as? UIImage {
+                ivCover.image = image
+            } else {
+                ivCover.image = UIImage(named: "noCoverFull")
             }
         }
-        
-        let toolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: 44))
-        toolbar.tintColor = UIColor(named: "main")
-        let btCancel = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancel))
-        let btDone = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(done))
-        let btFlexibleSpace = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        toolbar.items = [btCancel, btFlexibleSpace, btDone]
-        
-        // tip. faz o text field exibir os dados predefinidos pela picker view
-        tfConsole.inputView = pickerView
-        tfConsole.inputAccessoryView = toolbar
     }
-    
-    @objc func cancel() {
-        // ocultar teclado
-        tfConsole.resignFirstResponder()
-    }
-    
-    @objc func done() {
-        tfConsole.text = ConsolesManager.shared.consoles[pickerView.selectedRow(inComponent: 0)].name
-        cancel()
-    }
-    
-    
-    /*
-     // MARK: - Navigation
-     
-     // In a storyboard-based application, you will often want to do a little preparation before navigation
-     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-     // Get the new view controller using segue.destination.
-     // Pass the selected object to the new view controller.
-     }
-     */
-    
+
     @IBAction func AddEditCover(_ sender: UIButton) {
         // para adicionar uma imagem da biblioteca
         print("AddEditCover")
         
-        
         // para adicionar uma imagem da biblioteca
     
         
-        let alert = UIAlertController(title: "Selecinar capa", message: "De onde você quer escolher a capa?", preferredStyle: .actionSheet)
+        let alert = UIAlertController(title: "Selecionar capa", message: "De onde você quer escolher a capa?", preferredStyle: .actionSheet)
         
         let libraryAction = UIAlertAction(title: "Biblioteca de fotos", style: .default, handler: {(action: UIAlertAction) in
             self.selectPicture(sourceType: .photoLibrary)
@@ -125,23 +68,16 @@ class AddEditViewController: UIViewController {
         present(alert, animated: true, completion: nil)
     }
     
-    @IBAction func addEditGame(_ sender: UIButton) {
+    @IBAction func addEditConsole(_ sender: UIButton) {
         // acao salvar novo ou editar existente
         print("addEditGame")
         
-        if game == nil {
+        if console == nil {
             // context está sendo obtida pela extension 'ViewController+CoreData'
-            game = Game(context: context)
+            console = Console(context: context)
         }
-        game?.title = tfTitle.text
-        game?.releaseDate = dpReleaseDate.date
-        
-        
-        if tfConsole.text?.isEmpty == false {
-            let console = ConsolesManager.shared.consoles[pickerView.selectedRow(inComponent: 0)]
-            game?.console = console
-        }
-        game?.cover = ivCover.image
+        console?.name = tfConsole.text
+        console?.cover = ivCover.image
         
         do {
             try context.save()
@@ -151,7 +87,6 @@ class AddEditViewController: UIViewController {
         // Back na navigation
         navigationController?.popViewController(animated: true)
     }
-    
     
     func chooseImageFromLibrary(sourceType: UIImagePickerController.SourceType) {
         
@@ -193,33 +128,9 @@ class AddEditViewController: UIViewController {
         }
     }
 
-    
-    
-} // fim classe
+} // fim da classe
 
-extension AddEditViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    
-    // UIPickerViewDataSource
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    // UIPickerViewDataSource
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return ConsolesManager.shared.consoles.count
-    }
-    
-    
-    // UIPickerViewDelegate
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        let console = ConsolesManager.shared.consoles[row]
-        
-        return console.name
-    }
-}
-
-
-extension AddEditViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+extension ConsoleAddEditViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
     
     // tip. implementando os 2 protocols o evento sera notificando apos user selecionar a imagem
     
