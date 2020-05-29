@@ -17,7 +17,6 @@ class GamesTableViewController: UITableViewController {
     // tip. podemos passar qual view vai gerenciar a busca. Neste caso a própria viewController (logo usei nil)
     let searchController = UISearchController(searchResultsController: nil)
     
-    
     var label = UILabel()
     
     override func viewDidLoad() {
